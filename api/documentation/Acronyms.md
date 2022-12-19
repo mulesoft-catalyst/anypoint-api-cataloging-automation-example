@@ -1,0 +1,1 @@
+This page is listing the most common acronyms used in the documentation and giving a brief explanation about each of them. This includes technology, business and/or any acronym used frequently and required for understanding the business and technical context.  

@@ -1,0 +1,51 @@
+#%Catalog Descriptor 0.6
+contact:
+  name: 'John Doe'
+  email: 'john.doe@org.com'
+apis:
+  - spec: test-api.raml
+    assetId: hello-world
+    customFields:
+      product-owner: John Doe
+    versioning: 1.0.x
+    apiVersion: v1
+    categories:
+      Category:
+        - Account Management
+      Solution:
+        - Retail Merchants
+      Product:
+        - Account Validation
+      Industry:
+        - Finance
+      Country - Market:
+        - South Africa
+      Country - Service:
+        - South Africa
+      Functional Domain:
+        - Banking
+      Channel:
+        - Mobile
+      Segment:
+        - CIB
+      API Type:
+        - Experience API
+      Audience:
+        - External
+      Information Security:
+        - Public (Very Low)
+      Operational Risk:
+        - Low
+    docs:
+      home: home.md
+      Business Context: Business Context.md
+      Technical View: Technical View.md
+      Reusable Assets and Libraries: Reusable Assets and Libraries.md
+      API Usage: API Usage.md
+      API Policies: API Policies.md
+      Release Notes: Release Notes.md
+      Acronyms: Acronyms.md
+      References - Internal: References - Internal.md
+      References - External: References - External.md
+      FAQ and Support: FAQ and Support.md
+      Service Terms and Compliance: Service Terms and Compliance.md

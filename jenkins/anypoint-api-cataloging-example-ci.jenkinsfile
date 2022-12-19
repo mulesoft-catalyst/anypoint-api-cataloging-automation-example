@@ -1,0 +1,98 @@
+#!groovy
+pipeline {
+    agent any
+    tools {nodejs "NodeJs"}
+    options {
+        skipDefaultCheckout true
+    }
+    environment {
+        BUILD_VERSION = "build.${currentBuild.number}"
+        CLIENT_ID = credentials('anypoint.platform.cataloging.clientId')
+        CLIENT_SECRET = credentials('anypoint.platform.cataloging.clientSecret')
+        ANYPOINT_PLATFORM_ORG_ID = credentials('anypoint.platform.org.id')
+    }
+    parameters {
+        string( name: 'BRANCH', defaultValue: "develop", description: 'Project branch' )
+        string( name: 'ANYPOINT_PLATFORM_URL', defaultValue: 'eu1.anypoint.mulesoft.com', description: 'URL for Anypoint Platform (Default: https://eu1.anypoint.mulesoft.com - Production Anypoint Platform)' )
+        string( name: 'ENVIRONMENT', defaultValue: "Sandbox", description: 'Environment where the API documentation will be deployed' )
+    }
+    stages{
+        stage('Checkout Release') {
+            steps {
+                script {
+                    def githubUrl = scm.userRemoteConfigs[0].url
+                    def branchName = scm.branches[0].name
+                    print "GitHub URL: " + githubUrl
+                    print "GitHub branch: " + branchName
+                    echo "Checking out Release from GitHub..."
+                    checkout([$class: 'GitSCM', 
+                              branches: [[name: "${branchName}"]], 
+                            doGenerateSubmoduleConfigurations: false, 
+                            extensions: [], 
+                            submoduleCfg: [], 
+                            userRemoteConfigs: [[ url: "${githubUrl}"]]])
+                    }
+                echo "Checkout Release completed: ${currentBuild.currentResult}"
+            }
+        }
+        stage('Downloading Anypoint Cataloging CLI') {
+            steps {
+                script {
+                    sh """npm install -g api-catalog-cli@latest"""
+                }
+            }    
+            post {
+                success {
+                    echo "...Download of Anypoint Cataloging CLI succeded for ${env.BUILD_VERSION}: ${currentBuild.currentResult}"
+                } 
+                failure {
+                    echo "...Download of Anypoint Cataloging CLI failed for ${env.BUILD_VERSION}: ${currentBuild.currentResult}"
+                }
+            }
+        }
+        stage('Cataloging API in Anypoint Platform') {
+            steps {
+                script {
+                    def branchName = scm.branches[0].name
+                    sh """cd api;
+                        echo "Cataloging API in Anypoint Platform'";
+                        errorCode="Error";
+                        commandOutput=\$(api-catalog publish-asset --descriptor-file=catalog.yaml \
+                        --host=${env.ANYPOINT_PLATFORM_URL} --organization=${env.ANYPOINT_PLATFORM_ORG_ID} \
+                        --environment=${env.ENVIRONMENT} \
+                        --client_id=${env.CLIENT_ID} --client_secret=${env.CLIENT_SECRET} \
+                        --trigger-criteria=branches:${branchName});
+                        if [[ \\"\$commandOutput\\" == *\\"\$errorCode\\"* ]]
+                            then
+                                echo "Error while Cataloging API - Please check the logs";
+                                exit 1;
+                            else
+                                echo "Success in Cataloging API";
+                                exit 0;
+                            fi
+                        """   
+                }
+            }    
+            post {
+                success {
+                    echo "...Cataloging API in Anypoint Platform succeed for ${env.BUILD_VERSION}: ${currentBuild.currentResult}"
+                } 
+                failure {
+                    echo "...Cataloging API in Anypoint Platform failed for ${env.BUILD_VERSION}: ${currentBuild.currentResult}"
+                }
+            }
+        }
+    }
+    post {
+        success {
+            echo "All Good: ${env.RELEASE_VERSION}: ${currentBuild.currentResult}"    
+        }
+        failure {
+            echo "Not So Good: ${env.RELEASE_VERSION}: ${currentBuild.currentResult}"
+        }         
+        always {
+            echo "Pipeline result: ${currentBuild.result}"
+            echo "Pipeline currentResult: ${currentBuild.currentResult}"
+        }
+    }
+}

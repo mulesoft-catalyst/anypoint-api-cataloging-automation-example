@@ -1,0 +1,80 @@
+#%Catalog Descriptor 1.0
+projects:
+  - main: p-greetings-api.raml
+    assetId: p-greetings-api
+    version: 1.1.0
+    apiVersion: v1
+    triggerConditions: 
+      branches:
+        - main
+        - master
+        - develop
+        - release/(.*)
+      # Uncomment and adapt the following lines to your project-specific tags
+      # tags:
+      #   - support
+      #   - release/(.*)
+    versionStrategy: patchIncrease
+    versionStrategyConditions:
+      minorIncrease:
+        branches:
+          - main
+        tags:
+          - support
+      majorIncrease:
+        branches:
+          - main
+          - master
+          - release/(*)
+        tags:
+          - support
+          - release/(*)
+      snapshot:
+        branches:
+          - develop
+    # Uncomment and adapt the following lines to your Exchange-specific customFields
+    # customFields:
+      #   product-owner: John Doe 
+    # Uncomment and adapt the following lines to your Exchange-specific categories
+    # categories:
+      # Category:
+      #   - Account Management
+      # API Domains
+      #   - Retail Merchants
+      # Product:
+      #   - Account Validation
+      # Industry:
+      #   - Finance
+      # Rollout
+      #   - South Africa
+      # Functional Domain:
+      #   - Banking
+      # Channel:
+      #   - Mobile
+      # Segment:
+      #   - CIB
+      # API Layer:
+      #   - Experience API
+      # Audience:
+      #   - External
+      # Information Security:
+      #   - Public (Very Low)
+      # Operational Risk:
+      #   - Low
+    # The following documentation structure represents a comprehensive set of sections that a well-documented API should have. Edit the referred files under the /documentation directory to update their content
+    documentation:
+      Home: documentation/home.md
+      Business Context: documentation/Business Context.md
+      Technical View: documentation/Technical View.md
+      Reusable Assets and Libraries: documentation/Reusable Assets and Libraries.md
+      API Usage: documentation/API Usage.md
+      API Policies: documentation/API Policies.md
+      Release Notes: documentation/Release Notes.md
+      Acronyms: documentation/Acronyms.md
+      References - Internal: documentation/References - Internal.md
+      References - External: documentation/References - External.md
+      FAQ and Support: documentation/FAQ and Support.md
+      Service Terms and Compliance: documentation/Service Terms and Compliance.md
+    contact: 
+      name: 'John Doe'
+      email: 'john.doe@org.com'

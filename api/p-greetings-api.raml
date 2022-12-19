@@ -1,0 +1,90 @@
+#%RAML 1.0
+title: p-greetings-api
+version: v1
+protocols: [ HTTPS ]
+baseUri: http://p-greetings-api.cloudhub.io/api/{version}
+mediaType: application/json
+types:
+  Greeting:   !include types/Greeting.raml
+  Greetings: !include types/Greetings.raml
+  Error: !include types/Error.raml
+securedBy: basicAuth
+securitySchemes:
+  basicAuth:
+    description: Each request must contain the headers necessary for basic authentication
+    type: Basic Authentication
+    describedBy:
+      headers:
+        Authorization:
+          description: Used to send the Base64 encoded "username:password" credentials
+          type: string
+      responses:
+        401:
+          description: |
+            Unauthorized. Either the provided username and password
+            combination is invalid, or the user is not allowed to access
+            the content provided by the requested URL.
+/greetings:
+  get:
+    description: List all Greetings matching query criteria, if provided; otherwise list all Greetings
+    queryParameters:
+      name?: string
+      ownerName?: string
+    responses:
+      200:
+        body:
+          application/json:
+            type: Greetings
+            example: !include examples/Greetings.raml
+  post:
+    description: Create a new Greeting
+    body:
+      application/json:
+        type: Greeting
+        example: !include examples/Greeting.raml
+    responses:
+      201:
+        body:
+          application/json:
+            type: Greeting
+            example: !include examples/Greeting.raml
+  /{id}:
+    get:
+      description: Get a Greeting by id
+      responses:
+        200:
+          body:
+            application/json:
+              type: Greeting
+              example: !include examples/Greeting.raml
+        404:
+          body:
+            application/json:
+              type: Error
+              example: !include examples/Error.raml
+    put:
+      description: Update a Greeting by id
+      body:
+        application/json:
+          type: Greeting
+          example: !include examples/Greeting.raml
+      responses:
+        200:
+          body:
+            application/json:
+              type: Greeting
+              example: !include examples/Greeting.raml
+        404:
+          body:
+            application/json:
+              type: Error
+              example: !include examples/Error.raml
+    delete:
+      description: Delete a Foo by id
+      responses:
+        204:
+        404:
+          body:
+            application/json:
+              type: Error
+              example: !include examples/Error.raml
